@@ -1,6 +1,5 @@
+from turtle import forward
 import numpy as np
-
-''' TODO: precede with jupiter'''
 
 # Mathematical Essentials
 
@@ -19,43 +18,44 @@ def norm (vector : np.ndarray):
 
 class adaline:
 
-    def __init__(self, input_size : int, learning_factor : float):
+    def __init__(self, input_size : int, learning_rate : float):
 
         self.weights = np.random.uniform(-1, 1, input_size) + 0.001
 
-        self.learning_factor = learning_factor
+        self.learning_factor = learning_rate
 
 
-    def predict (self, example : np.ndarray):
+    def forward (self, example : np.ndarray):   # forwarding the data acording to the weights
         return example.dot(self.weights)
+
+    def predict (self, example : np.ndarray):   # applying activation function
+        return sigmoid(self.forward(example))
 
 
     def learn (self, example : np.ndarray, positive : bool):
 
         pred = self.predict(example)
 
-        if (sigmoid(pred) < 0.5 and positive) or (sigmoid(pred) >= 0.5 and not positive):    # mistake
+        if (pred < 0.5 and positive) or (pred >= 0.5 and not positive):    # mistake
 
-            gradient = np.array([0] * len(self.weights))
-
-            gradient = gradient.astype('float64')
+            gradient = np.array([0] * len(self.weights)).astype('float64')
 
             for i in range(len(gradient)):
 
                 # Taking the partial derivatives of the MSE times the learning rate
 
                 if positive:
-                    gradient[i] = self.learning_factor * (1 - pred) * example[i]
+                    gradient = (1 - pred) * example
                 else:
-                    gradient[i] = self.learning_factor * (-1 - pred) * example[i]
+                    gradient = (-1 - pred) * example
 
-            self.weights -= gradient
+            self.weights -= self.learning_factor * gradient
 
             return gradient
 
 
 
-    def train (self, data : np.ndarray):
+    def train (self, data : np.ndarray, labels : np.ndarray):
 
         if len(data.shape) < 2:
             raise ValueError('expecting attributes AND class')
@@ -64,17 +64,9 @@ class adaline:
 
         for i in range(len(data)):
 
-            if data[i][-1] == 1:
-                positive = True
-            elif data[i][-1] == -1:
-                positive = False
-            else:
-                raise ValueError('Target should ve bipolar')
+            error = self.learn(data[i], labels[i])
 
-        error = self.learn(data[i][:-1])
-
-        if error is not None:   # mistake
-            histroy.append(norm(error))
+            if error is not None:   # mistake
+                histroy.append(norm(error))
 
         return histroy
-
