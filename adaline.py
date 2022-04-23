@@ -38,16 +38,12 @@ class adaline:
 
         if (pred < 0.5 and positive) or (pred >= 0.5 and not positive):    # mistake
 
-            gradient = np.array([0] * len(self.weights)).astype('float64')
+            # Taking the partial derivatives of the MSE times the learning rate
 
-            for i in range(len(gradient)):
-
-                # Taking the partial derivatives of the MSE times the learning rate
-
-                if positive:
-                    gradient = (1 - pred) * example
-                else:
-                    gradient = (-1 - pred) * example
+            if positive:
+                gradient = (-1 - pred) * example
+            else:
+                gradient = (1 - pred) * example
 
             self.weights -= self.learning_factor * gradient
 
