@@ -1,4 +1,3 @@
-from turtle import forward
 import numpy as np
 
 # Mathematical Essentials
@@ -20,7 +19,7 @@ class adaline:
 
     def __init__(self, input_size : int, learning_rate : float):
 
-        self.weights = np.random.uniform(-1, 1, input_size) + 0.001
+        self.weights = np.random.uniform(-1, 1, input_size) + 0.001 
 
         self.learning_factor = learning_rate
 
@@ -38,12 +37,14 @@ class adaline:
 
         if (pred < 0.5 and positive) or (pred >= 0.5 and not positive):    # mistake
 
-            # Taking the partial derivatives of the MSE times the learning rate
+            # Taking the partial derivatives of the MSE
 
             if positive:
                 gradient = (-1 - pred) * example
             else:
                 gradient = (1 - pred) * example
+
+            # subtracting the MSE's gradient times the learning rate from the weights
 
             self.weights -= self.learning_factor * gradient
 
